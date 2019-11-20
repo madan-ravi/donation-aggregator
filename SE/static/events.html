@@ -46,10 +46,12 @@
 	</div>
 	<div class="registerwindow" id="register-2">
 		<div class="tagcontainer">
-			<p id="save-changes">Edit Page</p>
+			<p class="save-changes">Edit Page</p>
 			<input class="edit-mode" type="button" onclick="toggleEditingMode()" value="Edit Page">
 			<p>Page color</p>
 			<input type="color" onchange="colorChanger(this)" value="#3e8e3e">
+			<p class="save-changes">Add FAQs</p>
+			<input class="edit-mode" type="button" onclick="toggleQuestions()" value="Answer Questions">
 		</div>	
 	</div>
 	<div class="centercontent">
@@ -175,6 +177,15 @@
 						<div class="registerbutton" onclick="ask()">ASK QUESTION</div>
 					</div>
 				</div>
+		</div>
+	</div>
+
+	<div class="question-modal">
+		<div class="question-box">
+			<div class="upper-nav">
+				<h1>Questions</h1>
+				<i class="material-icons close-q" class="material-icons" onclick="closeQuestions()">close</i>
+			</div>
 		</div>
 	</div>
 
@@ -340,33 +351,33 @@
                 switch(no){
                     case 2:
                         $(`<div class="contentbox">
-													<div class="element-div">
-														<div class="h3-container">
-															<h3 class="about"  contenteditable="false"> Our Events</h3>
-															<button  onclick="delElement(this)"> <i class="material-icons">close</i></button>
-														</div>
-														<div class="flex-row-box">
-															<div class="frame-box" onclick="loadWidgetMenu(this)">
-																<div class="frame-button">
-																	<i class="material-icons">add</i>
-																</div>
-																<iframe></iframe>
-															</div>
-															<div class="frame-box" onclick="loadWidgetMenu(this)">
-																<div class="frame-button">
-																	<i class="material-icons">add</i>
-																</div>
-																<iframe></iframe>
-															</div>
-															<div class="frame-box" onclick="loadWidgetMenu(this)">
-																<div class="frame-button">
-																	<i class="material-icons">add</i>
-																</div>
-																<iframe></iframe>
-															</div>
-														</div>
-													</div>
-												</div>`).insertBefore(".faqcontainer")
+								<div class="element-div">
+									<div class="h3-container">
+										<h3 class="about"  contenteditable="false"> Our Events</h3>
+										<button  onclick="delElement(this)"> <i class="material-icons">close</i></button>
+									</div>
+									<div class="flex-row-box">
+										<div class="frame-box" onclick="loadWidgetMenu(this)">
+											<div class="frame-button">
+												<i class="material-icons">add</i>
+											</div>
+											<iframe></iframe>
+										</div>
+										<div class="frame-box" onclick="loadWidgetMenu(this)">
+											<div class="frame-button">
+												<i class="material-icons">add</i>
+											</div>
+											<iframe></iframe>
+										</div>
+										<div class="frame-box" onclick="loadWidgetMenu(this)">
+											<div class="frame-button">
+												<i class="material-icons">add</i>
+											</div>
+											<iframe></iframe>
+										</div>
+									</div>
+								</div>
+							</div>`).insertBefore(".faqcontainer")
 												
                         break;
                 }
@@ -384,15 +395,49 @@
                 }
             }
 
+			function getUnAnsweredFAQ(){
+				
+				$.ajax({
+					url:"http://localhost:4000/charity/event/getunAnsweredFAQ",
+					method:"get",
+					data:{"CharityID":1,"EventID":"12"},
+					success:function(data){
+						buildQuestions(JSON.parse(data))
+					}
+				})
+
+				buildQuestions()
+			}
+
+			function buildQuestions(data = [{"Query":"Will participants recieve certificates for finishing event?","FaqID": 2}])
+            {
+
+				data.forEach((ele)=>{
+					console.log(ele)
+					$(".question-box").append($(`<div class="questions">
+						<h4>`+ele["Query"]+`</h4>
+						<input class="answer-q" placeholder="Enter your answer">
+						<input type="button" class="answer-button" onclick="answerQuestion(this)"" value="Answer">
+					</div>`).attr("id",ele["FaqID"]))
+				})
+				
+			}
+
 			function ask(){
 				$.ajax({
-					url:"http://localhost:4000/customdata",
-					method:"get",
-					data:{"question":$(".addfaq").val()},
+					url:"http://localhost:4000/charity/event/initQuery",
+					method:"post",
+					data:{"QueryString":$(".addfaq").val(),"CharityID":1,"EventID":"12"},
 					success:function(data){
 						console.log($(".addfaq").val())
 					}
 				})
+				
+			}
+
+			function answerQuestion(ob){
+
+				
 				
 			}
 
@@ -462,7 +507,7 @@
 					$("#tag-container").hide()
 					$(".small-text").css({"animation":"none"})
 					$(".edit-mode").val("Edit Page")
-					$("#save-changes").text("Edit Page")
+					$(".save-changes").text("Edit Page")
 					$("#register-count").hide()
 					saveData()
                 }
@@ -481,7 +526,7 @@
 					$("#tag-container").show()
 					$(".faqcontainer h3").css({"animation":"none"})
 					$(".edit-mode").val("Save Changes")
-					$("#save-changes").text("Save Changes")
+					$(".save-changes").text("Save Changes")
 					$("#register-count").show()
                 }
 				
@@ -531,6 +576,21 @@
 					});
 				});
 			}
+
+
+			function toggleQuestions(){
+				getUnAnsweredFAQ()
+				$(".question-modal").animate({"height":"100%"},"fast",function(){
+					$(".question-box").fadeIn()
+				})
+			}
+
+			function closeQuestions(){
+				$(".question-box").fadeOut("fast",function(){
+					$(".question-modal").animate({"height":"0%"},"fast")
+				})
+			}
+
 		</script>
 		<script>
 
