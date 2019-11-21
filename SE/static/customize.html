@@ -37,6 +37,10 @@
 			<button class="edit-mode" onclick="loadComponentMenu()">Add Elements</button>
 		</div>	
 	</div>
+	<div class="bgimage">
+		<img src="#" id="bgimage-img">
+	</div>
+	
 	<div class="centercontent">
 		<div class="contentbody">
 			<div class="contentcover">
@@ -429,9 +433,7 @@
 			var totFollows = 0
 
 			$(document).ready(function(){
-				console.log(document.cookie)
 				var data = document.cookie.split("=")[1]
-				console.log(data)
 				$("#cid").text(data)
 				$.ajax({
 					url:"/updatefollow",

@@ -21,15 +21,15 @@ h3{
     margin:0px;
 
 }
+#color-select{
+    width:192px;
+    margin-bottom:0px !important;
+}
 
 .edit-mode{
-    color:#3e8e3e !important;
-    padding:8px;
-    box-shadow: none;
-    background:none;
-    border:none;
-    border:1px solid #818181;
-    margin-bottom:20px;
+    width:200px !important;
+    margin-left:0px !important;
+    margin-bottom:15px !important;
 }
 
 .bgimage
@@ -235,6 +235,7 @@ iframe
 
 .about{
     color:#3e8e3e;
+    margin-bottom:20px;
 }
 
 .eventtitle
@@ -696,7 +697,6 @@ h1{
     font-size:15px;
     /*animation:shake 0.6s;*/
     /*animation-iteration-count:infinite;*/
-    margin-top:20px;
     margin-bottom:10px;
 }
 
@@ -1035,6 +1035,10 @@ div[contenteditable="true"]{
     border:1px solid rgba(0,0,0,0.1);
 }
 
+input{
+    outline: none;
+}
+
 #tag-add{
     font-size:16px;
     color:rgba(0,0,0,0.6);
@@ -1044,6 +1048,7 @@ div[contenteditable="true"]{
 
 .tag-box{
     position: relative;
+    display: none;
 }
 
 #tag-container{
@@ -1280,4 +1285,21 @@ input[type="color"]{
     background:#3e8e3e;
     color:white;
     box-shadow: none;
+}
+
+.subscribe-flex{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#subscribe-override{
+    flex:1 !important;
+}
+
+#subscribe-button{
+    padding:8px;
+    background:#3e8e3e;
+    border:none;
+    color:white;
 }

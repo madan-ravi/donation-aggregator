@@ -141,16 +141,6 @@ class SetNewPassword(Resource):
         updateDB = mongo_user_details.update_one(myquery,newvalues)
         del linkReset[url]
 
-class CollectCustomPageData(Resource):
-    
-    def post(self):
-        pageData  = request.get_json(force=True) 
-        if pageData["type"]=="event":
-            pass
-    
-    def get(self):
-        print(request.args)
-        return "sent"
 
 class CustomProfilePage(Resource):
     
@@ -159,7 +149,7 @@ class CustomProfilePage(Resource):
     
 class EventsPage(Resource):
     
-    def get(self):
+    def get(self,eventid):
         return app.send_static_file('events.html')
 
 class createFAQ(Resource):
@@ -314,14 +304,13 @@ class getunAnsweredFAQ(Resource):
 api.add_resource(LoginPage, '/login')
 api.add_resource(SignupPage, '/signup')
 api.add_resource(CustomProfilePage, '/profile')
-api.add_resource(EventsPage, '/events')
+api.add_resource(EventsPage, '/events/<eventid>')
 api.add_resource(SendMail, '/sendMail')
 api.add_resource(VerifyOTP, '/verifyotp')
 api.add_resource(Login, '/login/senddata')
 api.add_resource(ForgotPassword, '/passwordreset')
 api.add_resource(ValidateResetPassword, '/validatepassword/<url>')
 api.add_resource(SetNewPassword, '/resetpassword')
-api.add_resource(CollectCustomPageData, '/customdata')
 api.add_resource(getunAnsweredFAQ, '/charity/event/getunAnsweredFAQ')
 api.add_resource(getAnsweredFAQ, '/charity/event/getAnsweredFAQ')
 api.add_resource(answerFAQ, '/charity/event/answerQuery')

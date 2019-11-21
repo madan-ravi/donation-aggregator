@@ -17,9 +17,9 @@
 	</script>
 </head>
 <body>
-	<div class="bgimage">
-		<img src="res/bg1.jpg" id="bgimage-img">
-	</div>
+	<span id="eid" style="display:none"></span>
+	<span id="cid" style="display: none"></span>
+
 	<div class="navbar">
 		<div class="left-bar">
 			<span><i class="material-icons">home</i><a href="#">Home</a></span>
@@ -30,6 +30,9 @@
 			<span><a href="#">Login</a></span>
 		</div>
 	</div>
+	<div class="bgimage">
+		<img src="#" id="bgimage-img">
+	</div>
 	<div class="registerwindow">
         <div class="registerfraction">
             <div id="register-required">
@@ -39,7 +42,7 @@
 
             </div>
         </div>
-        <h4 id="register-blurb">Get Registered soon!</h4> 
+        <h4 id="register-blurb">Click here to register!</h4> 
 		<div class="registerbutton">REGISTER</div>
 		<br><br>
 		<input id="register-count" placeholder="Enter expected number of registrations">
@@ -47,11 +50,11 @@
 	<div class="registerwindow" id="register-2">
 		<div class="tagcontainer">
 			<p class="save-changes">Edit Page</p>
-			<input class="edit-mode" type="button" onclick="toggleEditingMode()" value="Edit Page">
-			<p>Page color</p>
-			<input type="color" onchange="colorChanger(this)" value="#3e8e3e">
+			<input class="edit-mode registerbutton" type="button" onclick="toggleEditingMode()" value="Edit Page">
 			<p class="save-changes">Add FAQs</p>
-			<input class="edit-mode" type="button" onclick="toggleQuestions()" value="Answer Questions">
+			<input class="edit-mode registerbutton" type="button" onclick="toggleQuestions()" value="Answer Questions">
+			<p>Page color</p>
+			<input type="color" id="color-select" onchange="colorChanger(this)" value="#3e8e3e">
 		</div>	
 	</div>
 	<div class="centercontent">
@@ -62,7 +65,7 @@
 					<input type="file" onchange="loadCoverPic(this)">
 				</div>
 				<div class="loaded-cover-picture">
-					<img src="#">
+					<img id="cover-picture" src="#">
 				</div>
             </div>
             <div class="contentbox">
@@ -83,9 +86,10 @@
 					</div>
                 </div>
             </div>
-			<div class="contentbox overridegrid content-border">
-                <div class="eventorganizer">
-                    <h3 id="foundation-name" contenteditable="false">Ninaada Foundation</h3>
+			<div class="contentbox overridegrid content-border" style="padding-top:0px;">
+                <div class="eventorganizer subscribe-flex" id="subscribe-override">
+					<h3 id="foundation-name" contenteditable="false">Ninaada Foundation</h3>
+					<input class="registerbutton" type="button" onclick="subscribe()" value="Subscribe">
                 </div>			
             </div>
 			<div class="contentbox overridegrid content-border" style="border-bottom:1px solid rgba(0,0,0,0.1);border-top:1px solid rgba(0,0,0,0.1)"> 
@@ -93,7 +97,7 @@
 				<div class="materials">
 					<i class="material-icons" >my_location</i>
 					<br>
-					<input class="material-ip" id="location-id" value="Cubbon Park, Bangalore 560011">
+					<input class="material-ip" id="location-name" value="Cubbon Park, Bangalore 560011">
 				</div>
 				<div class="materials">
 					<i class="material-icons">date_range</i>
@@ -108,7 +112,7 @@
 				<div class="materials">
 					<i class="material-icons">person</i>
 					<br>
-					<input class="material-ip" id="contact-name" value="Your mom">
+					<input class="material-ip" id="contact-name" value="Coordinator">
 				</div>
 			</div>
 			<div class="contentbox">
@@ -151,7 +155,7 @@
 					
 					<div class="faq-ask">
 						<input type="text" class="addfaq" placeholder="Ask a question">
-						<div class="registerbutton" onclick="ask()">ASK QUESTION</div>
+						<div class="registerbutton" onclick="ask()">Ask us a question!</div>
 					</div>
 				</div>
 		</div>
@@ -230,6 +234,51 @@
             
             }
 
+			$("body").ready(function(){
+
+				//TODO
+				if(window.location.href.split("/")[window.location.href.split("/").length-1]!="0000"){
+					$("body").css({"opacity":"0"})
+					/*$.ajax({
+						url:"callMalaikaFunction",
+						method:"post",
+						data:JSON.stringify({"eid":$("#eid").text()}),
+						success:function(data){
+							console.log("Received page data")
+							pageBuilder(data)
+						}
+					})*/
+				}
+			})
+
+			function pageBuilder(data){
+				var cookie = document.cookie.split("-")[1]
+				if(data["cid"]!=cookie){
+					$("#register-2").remove()
+				}
+				colorReplace(0,data["color"])
+				data["tags"].forEach((ind,ele)=>{
+					$(".tag-holder").append($("<p></p>").attr("class","tag").attr("id",ele).text(ele))
+				})
+				$("#foundation-name").text(data["foundation-name"])
+				$("#event-title").text(data["event-name"])
+				$("#event-head").text(data["event-head"])
+				$("#event-details").text(data["event-details"])
+				$("#location-name").text(data["location-name"])
+				$("#location-link").text(data["location-link"])
+				$("#event-date").text(data["event-date"])
+				$("#phone-no").text(data["phone-no"])
+				$("#contact-name").text(data["contact-name"])
+				$("body").css({"opacity":"1"})
+			}
+			
+
+			$(document).ready(function(){
+				var eid = window.location.href.split("/")[window.location.href.split("/").length-1]
+				$("#eid").text(eid)
+				var data = document.cookie.split("=")[1]
+				$("#cid").text(data)
+			})
 
 			$(".editable-p").on("focus",function(){
 				if($(this).html()=="Sample Text"){
@@ -251,7 +300,6 @@
                 $(ref).parent().parent().parent().slideUp(350,function(){
                     $(this).remove()
                 })
-
             }
 
 			function delImgRow(ob){
@@ -377,7 +425,7 @@
 				$.ajax({
 					url:"http://localhost:4000/charity/event/getunAnsweredFAQ",
 					method:"get",
-					data:{"CharityID":1,"EventID":"12"},
+					data:{"CharityID":$("#cid").text(),"EventID":$("#eid").text()},
 					success:function(data){
 						buildQuestions(JSON.parse(data))
 					}
@@ -404,12 +452,22 @@
 				$.ajax({
 					url:"http://localhost:4000/charity/event/initQuery",
 					method:"post",
-					data:{"QueryString":$(".addfaq").val(),"CharityID":1,"EventID":"12"},
+					data:{"QueryString":$(".addfaq").val(),"CharityID":$("#cid").text(),"EventID":$("#eid").text()},
 					success:function(data){
 						console.log($(".addfaq").val())
 					}
 				})
 				
+			}
+
+			function getBase64Image(img) {
+				var canvas = document.createElement("canvas");
+				canvas.width = img.width;
+				canvas.height = img.height;
+				var ctx = canvas.getContext("2d");
+				ctx.drawImage(img, 0, 0);
+				var dataURL = canvas.toDataURL("image/png");
+				return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
 			}
 
 			function answerQuestion(ob){
@@ -428,7 +486,7 @@
 				$.ajax({
 					url:"http://localhost:4000/charity/event/initQuery",
 					method:"post",
-					data:{"CharityID":1,"EventID":"12"},
+					data:{"CharityID":$("#cid").text(),"EventID":$("#eid").text()},
 					success:function(data){
 						data.forEach((ele)=>{
 							$(`<div class="faq">
@@ -450,12 +508,14 @@
 				var reader = new FileReader();
 				var pageData = {
 
+					"cover-picture":getBase64Image($("#cover-picture")[0]),
 					"type":"event",
 					"foundation-name":$("#foundation-name").text(),
 					"event-title":$("#event-title").text(),
 					"event-head":$("#event-head").text(),
 					"event-details":$("#event-details").text(),
-					"location-id":$("#location-id").val(),
+					"location-name":$("#location-id").val(),
+					"location-link":$("#location-id").val(),
 					"event-date":$("#event-date").val(),
 					"phone-no":$("#phone-no").val(),
 					"contact-name":$("#contact-name").val(),
@@ -474,17 +534,15 @@
 					
 				})
 
-
 				console.log(pageData)				
 
 				$.ajax({
-					url:"http://localhost:4000/customdata",
+					url:"/"+$("#cid").text()+"/create-event",
 					async:true,
 					method:"post",
 					cache: false,
 					data: JSON.stringify(pageData),
 					contentType: "application/json",
-					processData: false,
 					success:function(){
 						
 						console.log("sent")
@@ -506,10 +564,10 @@
 					$(".about").css({"border":"none","animation":"none"})
 					$("div[contenteditable='true']").css({"animation":"none"}).attr("contenteditable","false")
 					$("#add-tag").hide()
-					$("#tag-container").hide()
+					$(".tag-box").hide()
 					$(".small-text").css({"animation":"none"})
-					$(".edit-mode").val("Edit Page")
-					$(".save-changes").text("Edit Page")
+					$($(".edit-mode")[0]).val("Edit Page")
+					$($(".save-changes")[0]).text("Edit Page")
 					$("#register-count").hide()
 					saveData()
                 }
@@ -525,10 +583,10 @@
 					$(".about").css({"animation":"0.6s shake","animation-iteration-count":"infinite","border":"1px solid rbga(0,0,0,0.1)"})
 					$("div[contenteditable='false']").css({"animation":"0.6s shake","animation-iteration-count":"infinite"}).attr("contenteditable","true")
 					$("#add-tag").show()
-					$("#tag-container").show()
+					$(".tag-box").show()
 					$(".faqcontainer h3").css({"animation":"none"})
-					$(".edit-mode").val("Save Changes")
-					$(".save-changes").text("Save Changes")
+					$($(".edit-mode")[0]).val("Save Changes")
+					$($(".save-changes")[0]).text("Save Changes")
 					$("#register-count").show()
                 }
 				
@@ -540,10 +598,15 @@
 
 			var currentColor = "#3e8e3e"
 
-			function colorChanger(ob){
+			function colorChanger(ob,onrender=false){
+				if(onrender==false){
+					colorReplace(currentColor,ob.value)
+					currentColor = ob.value
+				}
+				else{
+					colorReplace(currentColor,onrender)
+				}
 				
-				colorReplace(currentColor,ob.value)
-				currentColor = ob.value
 				
 			}
 			
@@ -615,7 +678,7 @@
 								var tagTxt = ""
 								tagTxt+=element
 								if($("#"+tagTxt).length==0){
-									$(".tag-holder").append($("<p></p>").attr("class","tag").attr("id",tagTxt).text(tagTxt+"   "+"x").click(function(){
+									$(".tag-holder").append($("<p></p>").css({"background":currentColor}).attr("class","tag").attr("id",tagTxt).text(tagTxt+"   "+"x").click(function(){
 										tagArray.push($(this).text().split(" ")[0])
 										$(this).remove()
 										tagCount--
