@@ -16,7 +16,7 @@
 	</script>
 </head>
 <body>
-
+	<span id="cid" style="display: none"></span>
 	<div class="navbar">
 		<div class="left-bar">
 			<span><i class="material-icons">home</i><a href="#">Home</a></span>
@@ -49,7 +49,7 @@
 				</div>
 				<div class="follow-nav">
 					<div class="follower-count">
-						<h3 id="follow-count">1700</h3>
+						<h3 id="follow-count">0</h3>
 					</div>
 					<div class="follow">
 						<input id="follow-btn" type="button" value="Follow" onclick="increaseFol()">
@@ -276,6 +276,18 @@
                 }
             }
 
+			function increaseFol(){
+				$.ajax({
+					url:"/updatefollow",
+					method:"post",
+					data:JSON.stringify({"CharityID":$("#cid").text()}),
+					contentType:"application/json",
+					success:function(data){
+						$("#follow-count").text(parseInt($("#follow-count").text())+1)
+					}
+				})
+			}
+
             function loadImage(input) {
                 if (input.files && input.files[0]) {
                     var reader = new FileReader();
@@ -316,6 +328,7 @@
                 }
                 selectedFrame = frameParent
             }
+
 
             function addWidget(path){
                 $($(selectedFrame).children()[1]).attr("src",path)
@@ -413,9 +426,34 @@
                 }
             }
 
+			var totFollows = 0
+
+			$(document).ready(function(){
+				console.log(document.cookie)
+				var data = document.cookie.split("=")[1]
+				console.log(data)
+				$("#cid").text(data)
+				$.ajax({
+					url:"/updatefollow",
+					method:"get",
+					data:{"CharityID":$("#cid").text()},
+					contentType:"application/json",
+					success:function(data){
+						totFollows = parseInt(data)
+						currFollows = totFollows - 60
+						if(currFollows < 0){
+							currFollows = 0
+						}
+						$("#follow-count").text(currFollows)
+					}
+				})
+			})
+				
+			
+
             function followCount(){
                 $("#follow-count").text(parseInt($("#follow-count").text())+1)
-                if($("#follow-count").text()=="2000"){
+                if($("#follow-count").text()==totFollows){
                     clearInterval(followCounterInterval)
                 }
             }

@@ -1227,7 +1227,7 @@ input[type="color"]{
     width:40%;
     display: none;
     background: white;
-    position: relative;
+    position: fixed;
     margin:10px;
     overflow-y: scroll;
     padding:20px;

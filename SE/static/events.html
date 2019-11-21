@@ -148,30 +148,7 @@
 			</div>
             <div class="faqcontainer">
 					<h3 class="about" spellcheck="false">FAQs</h3>
-					<div class="faq">
-						<div class="question">
-							Are you also open to collecting some old clothes?
-						</div>
-						<div class="answer">
-						Yes! All help is appreciated. 
-						</div>
-					</div>
-					<div class="faq">
-						<div class="question">
-							Are you also open to collecting some old clothes?
-						</div>
-						<div class="answer">
-						Yes! All help is appreciated. 
-						</div>
-					</div>
-					<div class="faq">
-						<div class="question">
-							Are you also open to collecting some old clothes?
-						</div>
-						<div class="answer">
-						Yes! All help is appreciated. 
-						</div>
-					</div>
+					
 					<div class="faq-ask">
 						<input type="text" class="addfaq" placeholder="Ask a question">
 						<div class="registerbutton" onclick="ask()">ASK QUESTION</div>
@@ -436,11 +413,36 @@
 			}
 
 			function answerQuestion(ob){
-
 				
-				
+				$.ajax({
+					url:"http://localhost:4000/charity/event/initQuery",
+					method:"post",
+					data:{"Answer":$($(ob).parent().find(".answer-q")).val(),"CharityID":1,"EventID":"12","FaqID":$(ob).parent().attr("id")},
+					success:function(data){
+						console.log($(".addfaq").val())
+					}
+				})
 			}
 
+			function getAnsweredFAQ(){
+				$.ajax({
+					url:"http://localhost:4000/charity/event/initQuery",
+					method:"post",
+					data:{"CharityID":1,"EventID":"12"},
+					success:function(data){
+						data.forEach((ele)=>{
+							$(`<div class="faq">
+								<div class="question">
+									`+ele["Query"]+`
+								</div>
+								<div class="answer">
+								`+ele["Answer"]+`
+								</div>
+							</div>`).insertBefore(".faq-ask")
+						})
+					}
+				})
+			}
 
 			function saveData(){
 
@@ -546,8 +548,6 @@
 			}
 			
 			function colorReplace(findHexColor, replaceWith) {
-				// Convert rgb color strings to hex
-				// REF: https://stackoverflow.com/a/3627747/1938889
 				function rgb2hex(rgb) {
 					if (/^#[0-9A-F]{6}$/i.test(rgb)) return rgb;
 					rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);

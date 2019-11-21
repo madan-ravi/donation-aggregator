@@ -11,6 +11,7 @@ mongoConn = pymongo.MongoClient("mongodb://localhost:27017/")
 
 db = mongoConn["charity_agg"]
 mongo_user_details = db["user_details"]
+mongo_charity_details = db["charity_details"]
 app = Flask(__name__)
 @app.after_request
 
@@ -61,8 +62,14 @@ class SendMail(Resource):
 
 class VerifyOTP(Resource):
     def createUser(self,key):
-        userStore[key]["_id"] = "USER"+str(random.randint(10000000,99999999))
-        insertDB = mongo_user_details.insert_one(userStore[key])
+
+        if userStore[key]["role"]=="charity":
+            userStore[key]["cid"] = "CHARITY"+str(random.randint(10000000,99999999))
+            userStore[key]["followers"] = 0
+            insertDB = mongo_charity_details.insert_one(userStore[key])
+        else:
+            userStore[key]["uid"] = "USER"+str(random.randint(10000000,99999999))
+            insertDB = mongo_user_details.insert_one(userStore[key])
         del userStore[key]
 
     def post(self):
@@ -76,15 +83,34 @@ class VerifyOTP(Resource):
         else:
             return "0"
 
+class UpdateCharityFollowCount(Resource):
+
+    def post(self):
+        jsonReq = request.get_json(force=True)
+        print(jsonReq)
+        myquery = { "cid": jsonReq["CharityID"]}
+        row = mongo_charity_details.find({"cid":jsonReq["CharityID"]}).limit(1)
+        currFollow = row[0]["followers"] +1
+        newvalues = { "$set": { "followers": currFollow }}
+        updateDB = mongo_charity_details.update_one(myquery,newvalues)
+
+    def get(self):
+        row = mongo_charity_details.find({"cid":request.args["CharityID"]}).limit(1)
+        return str(row[0]["followers"])
+
 class Login(Resource):
     def post(self):
         jsonReq = json.loads(request.get_data().decode("UTF-8"))
         email = jsonReq["email"]
         password = jsonReq["password"]
-        row = mongo_user_details.find({"email":email}).limit(1)
-        if row.count():
-            if bcrypt.checkpw(password.encode("utf-8"), row[0]["password"]):
-                return "Logged In-"+str(row[0]["_id"])
+        userrow = mongo_user_details.find({"email":email}).limit(1)
+        charityrow = mongo_charity_details.find({"email":email}).limit(1)
+        if userrow.count():
+            if bcrypt.checkpw(password.encode("utf-8"), userrow[0]["password"]):
+                return "Logged In-"+str(userrow[0]["uid"])
+        elif charityrow.count():
+            if bcrypt.checkpw(password.encode("utf-8"), charityrow[0]["password"]):
+                return "Logged In-"+str(charityrow[0]["cid"])
         return "Wrong password"
 
 class ForgotPassword(Resource):
@@ -300,6 +326,7 @@ api.add_resource(getunAnsweredFAQ, '/charity/event/getunAnsweredFAQ')
 api.add_resource(getAnsweredFAQ, '/charity/event/getAnsweredFAQ')
 api.add_resource(answerFAQ, '/charity/event/answerQuery')
 api.add_resource(createFAQ, '/charity/event/initQuery')
+api.add_resource(UpdateCharityFollowCount, '/updatefollow')
 
 if __name__ == '__main__':
     app.run(port=4000,debug=True)
