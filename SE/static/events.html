@@ -224,9 +224,8 @@
                     }
                     else{
                         $("body").animate({"left":"0px"},"fast")
-						$("#register-2").animate({"right":"370px"},"fast")
                         $("#widget-menu-2").animate({"right":"-350"},"fast")
-						$(".registerwindow").animate({"right":"370px"},"fast")
+						$(".registerwindow").animate({"right":"330px"},"fast")
                     }
                     
                 }
@@ -237,9 +236,8 @@
 			$("body").ready(function(){
 
 				//TODO
-				if(window.location.href.split("/")[window.location.href.split("/").length-1]!="0000"){
-					$("body").css({"opacity":"0"})
-					/*$.ajax({
+					/*$("body").css({"opacity":"0"})
+					$.ajax({
 						url:"callMalaikaFunction",
 						method:"post",
 						data:JSON.stringify({"eid":$("#eid").text()}),
@@ -248,7 +246,7 @@
 							pageBuilder(data)
 						}
 					})*/
-				}
+				
 			})
 
 			function pageBuilder(data){
@@ -356,9 +354,8 @@
                     }
                     else{
                         $("body").animate({"left":"-250px"},"fast")
-						$("#register-2").animate({"right":"370px"},"fast")
                         $("#widget-menu-1").animate({"right":"0"},"fast")
-						$(".registerwindow").animate({"right":"370px"},"fast")
+						$(".registerwindow").animate({"right":"330px"},"fast")
                         widgetToggle = true
                         
                     }

@@ -29,13 +29,11 @@
 	</div>
 	<div class="registerwindow" id="register-3">
 		<div class="tagcontainer">
-			<p id="save-changes">Edit Page</p>
-			<input class="edit-mode" id="save-input" type="button" onclick="toggleEditingMode()" value="Edit Page">
-			<p>Page color</p>
-			<input type="color" onchange="colorChanger(this)" value="#3e8e3e">
-			<p>Add Elements</p>
-			<button class="edit-mode" onclick="loadComponentMenu()">Add Elements</button>
-		</div>	
+				<p id="save-changes">Edit Page</p>
+				<input class="edit-mode registerbutton" id="save-input" type="button" onclick="toggleEditingMode()" value="Edit Page">
+				<p>Page color</p>
+				<input type="color" onchange="colorChanger(this)" value="#3e8e3e">
+		</div>
 	</div>
 	<div class="bgimage">
 		<img src="#" id="bgimage-img">
@@ -164,6 +162,7 @@
 							<button class="del-btn" onclick="delImgRow(this)"> <i class="material-icons">close</i></button>
 						</div>
 					</div>
+					<button class="edit-mode registerbutton" id="add-component" onclick="addComponents(3)">Add</button>
 				</div>
 			</div>
 		</div>
@@ -185,21 +184,8 @@
 		</div>
 	</div>
 
-	<div class="widget-menu" id="widget-menu-2">
-		<div class="close-div" onclick="loadComponentMenu()">
-			<h3>Components</h3>
-			<i class="material-icons close-widget">close</i>
-		</div>
-		<div class="widgets" id="component-1" onclick="addComponents(1)">
-			
-		</div>
-		<div class="widgets" id="component-2" onclick="addComponents(2)">
-
-		</div>
-		<div class="widgets" id="component-3" onclick="addComponents(3)">
-
-		</div>
-	</div>
+		
+	
 
 	<script>
 
@@ -214,17 +200,17 @@
                 if(componentToggle && widgetToggle){
                     $("#widget-menu-2").animate({"right":"0"},"fast")
                     $("#widget-menu-1").animate({"right":"-350"},"fast")
-					$(".registerwindow").animate({"right":"100px"},"fast")
+					$(".registerwindow").animate({"right":"80px"},"fast")
                     widgetToggle = false
                 }else{
                     if(componentToggle){
                         $("body").animate({"left":"-250px"},"fast")
-						$(".registerwindow").animate({"right":"250px"},"fast")
+						$(".registerwindow").animate({"right":"330px"},"fast")
                         $("#widget-menu-2").animate({"right":"0"},"fast")
                     }
                     else{
                         $("body").animate({"left":"0px"},"fast")
-						$(".registerwindow").animate({"right":"100px"},"fast")
+						$(".registerwindow").animate({"right":"80px"},"fast")
                         $("#widget-menu-2").animate({"right":"-350"},"fast")
                     }
                     
@@ -245,6 +231,55 @@
 					$(this).html("Sample Text")
 				}
 			})
+
+			$("body").ready(function(){
+
+				//TODO
+				
+				/*$("body").css({"opacity":"0"})
+				$.ajax({
+					url:"callMalaikaFunction",
+					method:"post",
+					data:JSON.stringify({"eid":$("#eid").text()}),
+					success:function(data){
+						console.log("Received page data")
+						pageBuilder(data)
+					}
+				})*/
+				
+				
+			})
+
+			function getBase64Image(img) {
+				var canvas = document.createElement("canvas");
+				canvas.width = img.width;
+				canvas.height = img.height;
+				var ctx = canvas.getContext("2d");
+				ctx.drawImage(img, 0, 0);
+				var dataURL = canvas.toDataURL("image/png");
+				return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+			}
+
+			function pageBuilder(data){
+				var cookie = document.cookie.split("-")[1]
+				if(data["cid"]!=cookie){
+					$("#register-3").remove()
+				}
+				colorReplace(0,data["color"])
+				data["tags"].forEach((ind,ele)=>{
+					$(".tag-holder").append($("<p></p>").attr("class","tag").attr("id",ele).text(ele))
+				})
+				$("#foundation-name").text(data["foundation-name"])
+				$("#event-title").text(data["event-name"])
+				$("#event-head").text(data["event-head"])
+				$("#event-details").text(data["event-details"])
+				$("#location-name").text(data["location-name"])
+				$("#location-link").text(data["location-link"])
+				$("#event-date").text(data["event-date"])
+				$("#phone-no").text(data["phone-no"])
+				$("#contact-name").text(data["contact-name"])
+				$("body").css({"opacity":"1"})
+				}
 
             
             function callLoaders(){
@@ -310,21 +345,21 @@
                 widgetToggle = true
                 if(componentToggle && widgetToggle){
                     $("#widget-menu-1").animate({"right":"0"},"fast")
-                    $("#widget-menu-2").animate({"right":"-350"},"fast")
+                    $("#widget-menu-2").animate({"right":"-330px"},"fast")
 					$(".registerwindow").animate({"right":"80px"},"fast")
                     componentToggle = false
                 }
                 else{
                     if(frameParent=='close'){
                         $("body").animate({"left":"0px"},"fast")
-                        $("#widget-menu-1").animate({"right":"-350"},"fast")
+                        $("#widget-menu-1").animate({"right":"-330px"},"fast")
 						$(".registerwindow").animate({"right":"80px"},"fast")
                         widgetToggle = false
                     }
                     else{
                         $("body").animate({"left":"-250px"},"fast")
                         $("#widget-menu-1").animate({"right":"0"},"fast")
-						$(".registerwindow").animate({"right":"350px"},"fast")
+						$(".registerwindow").animate({"right":"330px"},"fast")
                         widgetToggle = true
                         
                     }
@@ -426,6 +461,7 @@
 												</div>`)
 												}
 						imageRows++
+						$(".event-desc").css({"animation":"0.6s shake","animation-iteration-count":"infinite"}).attr("contenteditable","true")
                         break;
                 }
             }
@@ -533,6 +569,7 @@
 					$(".small-text").css({"animation":"none"})
 					$("#save-changes").text("Edit Page")
 					$("#save-input").val("Edit Page")
+					$("#add-component").hide()
 					saveData()
                 }
                 else{
@@ -549,6 +586,9 @@
 					$(".del-btn").show()
 					$("#save-changes").text("Save Changes")
 					$("#save-input").val("Save Changes")
+					$($(".edit-mode")[0]).val("Save Changes")
+					$($(".save-changes")[0]).text("Save Changes")
+					$("#add-component").show()
                 }
 				
 				$("p[contenteditable] , h3[contenteditable],h4[contenteditable]").attr("contenteditable",editMode)
